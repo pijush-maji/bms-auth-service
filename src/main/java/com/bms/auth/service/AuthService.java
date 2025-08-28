@@ -6,6 +6,7 @@ import com.bms.auth.dto.SignupRes;
 import com.bms.auth.exception.BmsAuthServiceException;
 import com.bms.auth.model.BmsUser;
 import com.bms.auth.repository.BmsUserRepo;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -15,9 +16,12 @@ import java.util.Optional;
 public class AuthService {
 
     private final BmsUserRepo bmsUserRepo;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthService(BmsUserRepo bmsUserRepo){
+    public AuthService(BmsUserRepo bmsUserRepo,
+                       PasswordEncoder passwordEncoder){
         this.bmsUserRepo=bmsUserRepo;
+        this.passwordEncoder=passwordEncoder;
     }
 
 
@@ -29,7 +33,7 @@ public class AuthService {
             BmsUser user = new BmsUser();
             user.setName(userSignUp.getName());
             user.setEmail(userSignUp.getEmail());
-            user.setPassword(userSignUp.getPassword());
+            user.setPassword(passwordEncoder.encode(userSignUp.getPassword()));
             user.setCreatedAt(String.valueOf(new Date()));
             user.setUpdatedAt(String.valueOf(new Date()));
             user.setRole(UserRole.valueOf(userSignUp.getUserRole()));
