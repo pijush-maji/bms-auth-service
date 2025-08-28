@@ -1,6 +1,7 @@
 package com.bms.auth.service;
 
 import com.bms.auth.constant.UserRole;
+import com.bms.auth.dto.LoginReq;
 import com.bms.auth.dto.SignUpReq;
 import com.bms.auth.dto.SignupRes;
 import com.bms.auth.exception.BmsAuthServiceException;
@@ -40,5 +41,10 @@ public class AuthService {
             BmsUser save = bmsUserRepo.save(user);
             return new SignupRes("User created successfully");
         }
+    }
+
+    public BmsUser authenticate(LoginReq loginReq) throws BmsAuthServiceException {
+        return bmsUserRepo.findByEmail(loginReq.getEmail()).orElseThrow(
+                ()-> new BmsAuthServiceException("No User with the following email"+loginReq.getEmail()));
     }
 }
