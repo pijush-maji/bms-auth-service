@@ -2,6 +2,7 @@ package com.bms.auth.exception;
 
 import com.bms.auth.dto.CustomExceptionResponse;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,10 @@ public class GlobalExceptionHandler {
             problemDetail=ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED,ex.getMessage());
             problemDetail.setProperty("message","Token has expired");
         }
+        if(ex instanceof SignatureException){
+            problemDetail=ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED,ex.getMessage());
+            problemDetail.setProperty("message","Token is not valid");
+        }
         return problemDetail;
     }
 
@@ -30,6 +35,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BmsAuthServiceException.class)
     public ResponseEntity<CustomExceptionResponse> handleBmsAuthServiceException(BmsAuthServiceException ex){
+        CustomExceptionResponse res = new CustomExceptionResponse(ex.getMessage());
+        return new ResponseEntity<>(res,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(BmsUserServiceException.class)
+    public ResponseEntity<CustomExceptionResponse> handleBmsUserServiceException(BmsUserServiceException ex){
         CustomExceptionResponse res = new CustomExceptionResponse(ex.getMessage());
         return new ResponseEntity<>(res,HttpStatus.BAD_REQUEST);
     }
